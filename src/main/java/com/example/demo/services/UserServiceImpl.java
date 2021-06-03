@@ -1,6 +1,9 @@
 package com.example.demo.services;
 
 import com.example.demo.entity.User;
+import com.example.demo.exception.NotFoundException;
+import com.example.demo.model.dto.UserDto;
+import com.example.demo.model.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -34,7 +37,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getListUser() {
-        return null;
+    public List<UserDto> getListUser() {
+        List<UserDto> result = new ArrayList<UserDto>();
+        for (User user: users) {
+            result.add(UserMapper.toUserDto(user));
+        }
+        return result;
+    }
+
+    @Override
+    public UserDto getUserById(int id) {
+        for(User user : users) {
+            if(user.getId() == id) {
+                return UserMapper.toUserDto(user);
+            }
+        }
+        throw new NotFoundException("User không tồn tại trong hệ thống. :'(");
+    }
+
+    @Override
+    public List<UserDto> searchUser(String keyword) {
+        List<UserDto> result = new ArrayList<>();
+        for (User user: users) {
+            if (user.getName().contains(keyword)) {
+                result.add(UserMapper.toUserDto(user));
+            }
+        }
+        return result;
     }
 }
